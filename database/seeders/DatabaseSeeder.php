@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\User;
@@ -15,11 +17,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            PanosoganPilotSeeder::class,
         ]);
+
+        User::query()->updateOrCreate(
+            ['email' => 'admin@taniamanah.id'],
+            [
+                'name' => 'Superadmin Tani Amanah',
+                'password' => 'password',
+            ]
+        );
+
+        User::query()->updateOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Superadmin',
+                'password' => 'password',
+            ]
+        );
     }
 }

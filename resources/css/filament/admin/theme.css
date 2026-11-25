@@ -1,0 +1,174 @@
+@import 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&display=swap';
+
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* Typography definitions */
+.font-serif {
+    font-family: 'Newsreader', 'Lora', Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+
+.font-sans {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 1. Latar Belakang Halaman Utama: Warm Rice Cream (#F4F1EA) */
+html,
+body,
+.fi-body,
+.fi-layout,
+.fi-main,
+.fi-main-ctn,
+main.fi-main,
+.fi-page {
+    background-color: #F4F1EA !important;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+    color: #1C1917;
+}
+
+/* 2. Topbar Editorial: Bersih, Rapi, & Elegan */
+.fi-topbar-ctn {
+    background-color: #F4F1EA !important;
+    border-bottom: 1px solid #E5E0D5 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+.fi-topbar {
+    background-color: #F4F1EA !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    min-height: 4.25rem !important;
+    height: 4.25rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.fi-topbar-start .fi-logo,
+.fi-topbar .fi-logo {
+    font-family: 'Newsreader', 'Lora', Georgia, serif !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #1E3F2B !important;
+    letter-spacing: -0.02em !important;
+}
+
+.fi-topbar-open-sidebar-btn,
+.fi-topbar-close-sidebar-btn,
+.fi-topbar-collapse-sidebar-btn-ctn button {
+    color: #1E3F2B !important;
+}
+
+.fi-topbar-open-sidebar-btn:hover,
+.fi-topbar-close-sidebar-btn:hover,
+.fi-topbar-collapse-sidebar-btn-ctn button:hover {
+    background-color: rgba(30, 63, 43, 0.08) !important;
+    border-radius: 0.5rem !important;
+}
+
+/* 3. Sidebar Kiri (.fi-sidebar): Deep Forest Green (#1E3F2B) - Full Height & Rapi */
+#fi-main-sidebar,
+.fi-sidebar,
+.fi-main-sidebar {
+    background-color: #1E3F2B !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    min-height: calc(100dvh - 4.25rem) !important;
+    height: 100% !important;
+}
+
+.fi-sidebar-header-ctn,
+.fi-sidebar-header,
+.fi-sidebar-nav,
+.fi-sidebar-footer {
+    background-color: #1E3F2B !important;
+}
+
+.fi-sidebar-nav {
+    padding-top: 1.5rem !important;
+    padding-bottom: 2.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    flex-grow: 1 !important;
+    height: 100% !important;
+}
+
+/* Sidebar header & brand text */
+.fi-sidebar-header .fi-logo,
+.fi-sidebar-header a,
+.fi-sidebar-header span {
+    color: #F4F1EA !important;
+    font-family: 'Newsreader', 'Lora', Georgia, serif !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+}
+
+/* Teks menu krem/putih (#E7E5E4) */
+.fi-sidebar-item-btn,
+.fi-sidebar-item-label,
+.fi-sidebar-item-icon,
+.fi-sidebar-group-label,
+.fi-sidebar-item a,
+.fi-sidebar-item button {
+    color: #E7E5E4 !important;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.875rem !important;
+    transition: all 0.15s ease-in-out;
+}
+
+.fi-sidebar-item-btn {
+    padding: 0.65rem 0.875rem !important;
+    border-radius: 0.5rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.fi-sidebar-item-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 0.5rem !important;
+    color: #FFFFFF !important;
+}
+
+/* Item aktif memiliki background #2C543B dengan sudut membulat (rounded-lg) */
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn,
+.fi-sidebar-item-active .fi-sidebar-item-btn,
+.fi-sidebar-item-btn[aria-current="page"],
+.fi-sidebar-item-btn.fi-active {
+    background-color: #2C543B !important;
+    border-radius: 0.5rem !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15) !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon,
+.fi-sidebar-item-active .fi-sidebar-item-icon,
+.fi-sidebar-item-btn[aria-current="page"] .fi-sidebar-item-label,
+.fi-sidebar-item-btn[aria-current="page"] .fi-sidebar-item-icon {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Main content spacing & breathing room */
+.fi-main-ctn {
+    padding-top: 0 !important;
+}
+
+.fi-main {
+    padding-top: 2rem !important;
+    padding-bottom: 3.5rem !important;
+    max-width: 80rem !important; /* 7xl */
+}
+
+/* Editorial subtle borders and shadows */
+.border-editorial {
+    border-color: #E5E0D5 !important;
+}
+
+.bg-warm-rice {
+    background-color: #F4F1EA !important;
+}
+
+.bg-warm-card {
+    background-color: #F9F7F2 !important;
+}
