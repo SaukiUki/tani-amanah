@@ -146,4 +146,13 @@ class FilamentAdminDashboardTest extends TestCase
         $response->assertSee('Data Musim Aktif');
         $response->assertSee('Lihat semua 41 akad');
     }
+
+    public function test_filament_login_page_renders_with_modern_branding(): void
+    {
+        $response = $this->get('/admin/login');
+
+        $response->assertStatus(200);
+        $response->assertSee('Tani Amanah');
+        $response->assertSee('KOPERASI TANI PANOSOGAN • SERANG');
+    }
 }

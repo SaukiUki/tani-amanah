@@ -73,6 +73,14 @@
             <span>Contoh Rapor Petani (Pak Darma)</span>
         </a>
 
+        <a 
+            href="{{ route('whatsapp.simulator') }}" 
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-[#075E54] hover:bg-emerald-50 transition-colors"
+        >
+            <span class="w-7 h-7 rounded-lg bg-emerald-100 text-[#075E54] flex items-center justify-center text-sm">💬</span>
+            <span>Simulasi Bot WA Petani</span>
+        </a>
+
         <div class="border-t border-stone-100 my-1 pt-1">
             <a 
                 href="/admin" 

@@ -15,3 +15,4 @@ Route::get('/pesanan/{invoice_number}', CustomerPortal::class)->name('order.show
 
 Route::get('/rapor/{qr_slug}', [RaporController::class, 'show'])->name('rapor.show');
 Route::get('/admin/rapor-desa/preview', [RaporDesaController::class, 'preview'])->name('admin.rapor-desa.preview');
+Route::get('/demo-whatsapp', \App\Livewire\WhatsApp\FarmerChatSimulator::class)->name('whatsapp.simulator');

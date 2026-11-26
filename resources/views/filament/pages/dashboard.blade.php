@@ -15,60 +15,90 @@
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#E5E0D5]">
         <div class="space-y-1.5">
             <div class="text-[11px] sm:text-xs uppercase font-extrabold tracking-widest text-[#9A6209] flex items-center gap-2">
-                <span class="inline-block w-2 h-2 rounded-full bg-[#9A6209]"></span>
+                <span class="inline-block w-2 h-2 rounded-full bg-[#9A6209] animate-pulse"></span>
                 <span>KOPERASI TANI PANOSOGAN • {{ $seasonCode }}</span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-serif text-[#1E3F2B] font-bold tracking-tight">
                 Ringkasan musim tanam
             </h1>
+            <p class="text-xs text-stone-500 font-medium">
+                Dasbor Koperasi Tani Panosogan • Sistem Kemitraan Salam & Transparansi Lumbung Pangan
+            </p>
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#E8F3EB] text-[#1E3F2B] border border-[#2C543B]/20 shadow-xs">
+            <a 
+                href="{{ route('whatsapp.simulator') }}"
+                target="_blank"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#075E54] text-white hover:bg-[#128C7E] shadow-xs hover-lift transition-all active:scale-[0.99]"
+            >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                </svg>
+                <span>Simulasi Bot WA Petani</span>
+            </a>
+            <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#E8F3EB] text-[#1E3F2B] border border-[#2C543B]/20 shadow-xs">
                 <span class="w-2 h-2 rounded-full bg-[#1E3F2B] animate-pulse"></span>
                 <span>Data Musim Aktif</span>
             </span>
         </div>
     </div>
 
-    <!-- 2. BARIS KPI (4 KOLOM SEJAJAR) -->
+    <!-- 2. BARIS KPI (4 KOLOM SEJAJAR DENGAN HOVER LIFT) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- Kartu 1: Anggota aktif -->
-        <div class="bg-[#F9F7F2] border border-[#E5E0D5] rounded-2xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+        <!-- Kartu 1: Anggota dan lahan -->
+        <div class="bg-white border border-[#E5E0D5] rounded-2xl p-6 shadow-xs hover-lift flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block mb-2">
-                    Anggota aktif
-                </span>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block">
+                        Anggota dan lahan
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8F3EB] text-[#1E3F2B] border border-[#2C543B]/15">
+                        48 petani aktif
+                    </span>
+                </div>
                 <div class="text-3xl sm:text-4xl font-serif font-bold text-[#1E3F2B] tracking-tight">
                     {{ $farmerCount }} petani
                 </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-[#E5E0D5]/80 text-xs text-stone-600 font-medium">
-                {{ $areaFormatted }}
+            <div class="mt-4 pt-3 border-t border-[#E5E0D5]/80 text-xs text-stone-600 font-medium flex items-center justify-between">
+                <span>{{ $areaFormatted }}</span>
+                <span class="text-[11px] text-stone-600">{{ $villageName }}</span>
             </div>
         </div>
 
         <!-- Kartu 2: Dana salam diterima -->
-        <div class="bg-[#F9F7F2] border border-[#E5E0D5] rounded-2xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+        <div class="bg-white border border-[#E5E0D5] rounded-2xl p-6 shadow-xs hover-lift flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block mb-2">
-                    Dana salam diterima
-                </span>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block">
+                        Dana salam diterima
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FEF6E6] text-[#9A6209] border border-[#FDE6B8]">
+                        100% Akad Lunas
+                    </span>
+                </div>
                 <div class="text-3xl sm:text-4xl font-serif font-bold text-[#1E3F2B] tracking-tight">
                     Rp {{ $salamJt }} jt
                 </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-[#E5E0D5]/80 text-xs text-stone-600 font-medium">
-                {{ $subCount }} pelanggan × 3 bulan
+            <div class="mt-4 pt-3 border-t border-[#E5E0D5]/80 text-xs text-stone-600 font-medium flex items-center justify-between">
+                <span>{{ $subCount }} pelanggan × 3 bulan</span>
+                <span class="text-[11px] text-stone-600">Alokasi Panen</span>
             </div>
         </div>
 
-        <!-- Kartu 3: Gabah untuk Beras Amanah -->
-        <div class="bg-[#F9F7F2] border border-[#E5E0D5] rounded-2xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+        <!-- Kartu 3: Pembelian gabah / Gabah untuk Beras Amanah -->
+        <div class="bg-white border border-[#E5E0D5] rounded-2xl p-6 shadow-xs hover-lift flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block mb-2">
-                    Gabah untuk Beras Amanah
-                </span>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold text-stone-600 uppercase tracking-wider block">
+                        Pembelian gabah
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8F3EB] text-[#245D3B] border border-[#C6E2D0]">
+                        Harga Adil
+                    </span>
+                </div>
                 <div class="text-3xl sm:text-4xl font-serif font-bold text-[#1E3F2B] tracking-tight">
                     {{ $gabahTon }} ton
                 </div>
@@ -78,12 +108,17 @@
             </div>
         </div>
 
-        <!-- Kartu 4: Stok leuit desa (Kontras Gelap #1E3F2B) -->
-        <div class="bg-[#1E3F2B] border border-[#1E3F2B] text-white rounded-2xl p-6 shadow-sm transition-all duration-200 hover:shadow-md flex flex-col justify-between">
+        <!-- Kartu 4: Stok leuit desa (Kontras Gelap Berwibawa #1E3F2B) -->
+        <div class="bg-gradient-to-br from-[#1E3F2B] to-[#142B1E] border border-[#1E3F2B] text-white rounded-2xl p-6 shadow-sm hover-lift flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-[#E7E5E4]/85 uppercase tracking-wider block mb-2">
-                    Stok leuit desa
-                </span>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold text-[#E7E5E4]/85 uppercase tracking-wider block">
+                        Stok leuit desa
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/15 text-white border border-white/20">
+                        Lumbung Desa
+                    </span>
+                </div>
                 <div class="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
                     {{ $leuitTon }} ton
                 </div>
@@ -98,18 +133,23 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
         <!-- PANEL KIRI (8 Kolom): Akad salam musim ini -->
         <div class="lg:col-span-8 bg-white border border-[#E5E0D5] rounded-2xl shadow-xs overflow-hidden">
-            <div class="p-6 border-b border-[#E5E0D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="p-6 border-b border-[#E5E0D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAF8F5]/50">
                 <div>
-                    <h2 class="text-xl font-serif font-bold text-[#1E3F2B]">
-                        Akad salam musim ini
-                    </h2>
-                    <p class="text-xs text-stone-500 mt-0.5">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xl font-serif font-bold text-[#1E3F2B]">
+                            Akad salam musim ini
+                        </h2>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8F3EB] text-[#1E3F2B] border border-[#2C543B]/20">
+                            {{ $totalContracts }} Akad
+                        </span>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-1">
                         Daftar komitmen akad pembiayaan di muka dengan petani binaan
                     </p>
                 </div>
-                <a href="{{ \App\Filament\Resources\SalamContracts\SalamContractResource::getUrl() }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E3F2B] hover:text-[#2C543B] hover:underline transition-colors shrink-0">
-                    <span>Lihat semua {{ $totalContracts }} akad</span>
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ \App\Filament\Resources\SalamContracts\SalamContractResource::getUrl() }}" class="group inline-flex items-center gap-1.5 text-xs font-bold text-[#1E3F2B] hover:text-[#2C543B] transition-colors shrink-0">
+                    <span class="hover:underline">Lihat semua {{ $totalContracts }} akad</span>
+                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </a>
@@ -118,7 +158,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
-                        <tr class="bg-[#F9F7F2] border-b border-[#E5E0D5] text-[11px] font-bold text-stone-600 uppercase tracking-wider">
+                        <tr class="bg-[#FAF8F5] border-b border-[#E5E0D5] text-[11px] font-bold text-stone-600 uppercase tracking-wider">
                             <th class="py-3 px-5">Petani</th>
                             <th class="py-3 px-4">Luas</th>
                             <th class="py-3 px-4">Modal di muka</th>
@@ -142,28 +182,48 @@
                                     'Diserahkan sebagian' => 'bg-[#EBF3F8] text-[#1D5E84] border border-[#C5DFEE]',
                                     default => 'bg-stone-100 text-stone-700 border border-stone-200',
                                 };
+                                $statusDotClass = match ($statusLabel) {
+                                    'Sudah diserahkan' => 'bg-[#245D3B]',
+                                    'Menunggu panen' => 'bg-[#9A6209]',
+                                    'Diserahkan sebagian' => 'bg-[#1D5E84]',
+                                    default => 'bg-stone-500',
+                                };
+                                $farmerName = $contract->farmer?->nama ?? '-';
+                                $initials = collect(explode(' ', $farmerName))
+                                    ->filter()
+                                    ->take(2)
+                                    ->map(fn($part) => mb_substr($part, 0, 1))
+                                    ->join('') ?: 'P';
                             @endphp
-                            <tr class="hover:bg-[#F9F7F2]/60 transition-colors">
+                            <tr class="hover:bg-[#FAF8F5]/80 transition-colors">
                                 <td class="py-3.5 px-5">
-                                    <div class="font-semibold text-stone-900">
-                                        {{ $contract->farmer?->nama ?? '-' }}
-                                    </div>
-                                    <div class="text-[11px] text-stone-500">
-                                        {{ $contract->farmer?->blok_lahan ?? 'Blok Panosogan' }}
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#1E3F2B] font-bold text-xs flex items-center justify-center shrink-0 border border-[#2C543B]/15">
+                                            {{ $initials }}
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-stone-900">
+                                                {{ $farmerName }}
+                                            </div>
+                                            <div class="text-[11px] text-stone-500">
+                                                {{ $contract->farmer?->blok_lahan ?? 'Blok Panosogan' }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="py-3.5 px-4 tabular-nums text-stone-600">
+                                <td class="py-3.5 px-4 tabular-nums text-stone-600 font-medium">
                                     {{ number_format((float) ($contract->farmer?->luas_lahan_ha ?? 0), 2, ',', '.') }} ha
                                 </td>
-                                <td class="py-3.5 px-4 font-medium text-stone-900 tabular-nums">
+                                <td class="py-3.5 px-4 font-semibold text-stone-900 tabular-nums">
                                     Rp {{ number_format((float) $contract->modal_di_muka, 0, ',', '.') }}
                                 </td>
-                                <td class="py-3.5 px-4 tabular-nums text-stone-600">
+                                <td class="py-3.5 px-4 tabular-nums text-stone-600 font-medium">
                                     {{ number_format((float) $contract->gabah_dijanjikan_kg, 0, ',', '.') }} kg
                                 </td>
                                 <td class="py-3.5 px-5 text-right">
-                                    <span class="inline-block px-2.5 py-1 rounded-full text-xs font-semibold {{ $statusBadgeClass }}">
-                                        {{ $statusLabel }}
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $statusBadgeClass }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $statusDotClass }}"></span>
+                                        <span>{{ $statusLabel }}</span>
                                     </span>
                                 </td>
                             </tr>
@@ -179,20 +239,25 @@
             </div>
         </div>
 
-        <!-- PANEL KANAN (4 Kolom): Rapor amanah desa -->
+        <!-- PANEL KANAN (4 Kolom): Rapor Amanah Desa -->
         <div class="lg:col-span-4 bg-white border border-[#E5E0D5] rounded-2xl shadow-xs p-6 space-y-6">
             <div>
-                <h2 class="text-xl font-serif font-bold text-[#1E3F2B]">
-                    Rapor amanah desa
-                </h2>
-                <p class="text-xs text-stone-500 mt-0.5">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-serif font-bold text-[#1E3F2B]">
+                        Rapor Amanah Desa
+                    </h2>
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#E8F3EB] text-[#1E3F2B] border border-[#2C543B]/20">
+                        {{ $seasonCode }}
+                    </span>
+                </div>
+                <p class="text-xs text-stone-500 mt-1">
                     Transparansi pemenuhan komitmen ekologis dan keadilan budidaya bersama Koperasi Tani Panosogan
                 </p>
             </div>
 
             <!-- Kutipan Miring Filosofi Leluhur Banten -->
-            <div class="p-4 rounded-xl bg-[#F9F7F2] border-l-4 border-[#1E3F2B]">
-                <blockquote class="italic font-serif text-sm leading-relaxed text-[#1E3F2B]">
+            <div class="p-4 rounded-xl bg-[#FAF8F5] border-l-4 border-[#1E3F2B] border-y border-r border-[#E5E0D5]">
+                <blockquote class="italic font-serif text-sm leading-relaxed text-[#1E3F2B] font-medium">
                     "Lojor teu meunang dipotong, pondok teu meunang disambung."
                 </blockquote>
                 <p class="text-[11px] text-stone-500 mt-1.5 leading-normal">
@@ -241,20 +306,20 @@
 
             <!-- 2 Kotak Mini di Bawahnya -->
             <div class="grid grid-cols-2 gap-3 pt-3 border-t border-[#E5E0D5]/80">
-                <div class="p-3.5 bg-[#F9F7F2] rounded-xl border border-[#E5E0D5] text-center">
+                <div class="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E5E0D5] text-center hover-lift">
                     <div class="text-[11px] text-stone-600 font-semibold">Zakat tercatat</div>
-                    <div class="text-base font-serif font-bold text-[#1E3F2B] mt-0.5">
-                        {{ $zakatTon }} ton
+                    <div class="text-sm font-serif font-bold text-[#1E3F2B] mt-0.5">
+                        {{ $zakatTon }} ton • {{ $zakatFarmerCount }} petani
                     </div>
                     <div class="text-[10px] text-stone-500 mt-0.5">
-                        {{ $zakatFarmerCount }} petani
+                        UPZ Desa Panosogan
                     </div>
                 </div>
 
-                <div class="p-3.5 bg-[#F9F7F2] rounded-xl border border-[#E5E0D5] text-center">
+                <div class="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E5E0D5] text-center hover-lift">
                     <div class="text-[11px] text-stone-600 font-semibold">Pohon ditanam</div>
-                    <div class="text-base font-serif font-bold text-[#1E3F2B] mt-0.5">
-                        {{ $pohonCount }}
+                    <div class="text-sm font-serif font-bold text-[#1E3F2B] mt-0.5">
+                        {{ $pohonCount }} pohon
                     </div>
                     <div class="text-[10px] text-stone-500 mt-0.5">
                         Konservasi DAS
@@ -263,7 +328,7 @@
             </div>
 
             <!-- Tombol Penuh #1E3F2B: Siapkan rapor untuk syukuran panen -->
-            <a href="{{ route('admin.rapor-desa.preview') }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#1E3F2B] hover:bg-[#2C543B] text-white font-semibold text-xs rounded-xl shadow-xs transition-all duration-200">
+            <a href="{{ route('admin.rapor-desa.preview') }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#1E3F2B] hover:bg-[#2C543B] text-white font-semibold text-xs rounded-xl shadow-xs hover-lift active:scale-[0.99] transition-all duration-200">
                 <svg class="w-4 h-4 text-[#E7E5E4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
