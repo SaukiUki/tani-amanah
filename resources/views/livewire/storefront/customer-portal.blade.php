@@ -73,9 +73,15 @@
                     </div>
                     <div class="col-span-2 pt-2 border-t border-stone-100 flex items-center justify-between">
                         <div>
-                            <span class="text-[10px] text-stone-500 block">Paket Langganan:</span>
+                            <span class="text-[10px] text-stone-500 block">Paket / Kemasan:</span>
                             <span class="font-extrabold text-stone-900">
-                                {{ $subscription->plan_type === 'quarterly' ? 'Paket Musiman (3 Bulan / 30 kg)' : 'Paket Bulanan (1 Bulan / 10 kg)' }}
+                                @if(str_starts_with((string)$subscription->plan_type, 'retail_'))
+                                    Kemasan Tambahan ({{ $subscription->rice_kg_per_month }} kg)
+                                @elseif($subscription->plan_type === 'quarterly')
+                                    Paket Musiman (3 Bulan / 30 kg)
+                                @else
+                                    Paket Bulanan (1 Bulan / 10 kg)
+                                @endif
                             </span>
                         </div>
                         <div class="text-right">
@@ -181,6 +187,136 @@
                 <div class="p-2.5 rounded-xl bg-[#F4F1EA] border border-[#E5E0D5] text-[11px] text-stone-600 flex items-center gap-2">
                     <span class="text-sm">🏷️</span>
                     <span>Setiap karung beras dilengkapi stiker QR Code Rapor Panen untuk melacak tanggal giling dan asal petak sawah.</span>
+                </div>
+            </div>
+
+            <!-- 2.5. Opsi Beli Kemasan Tambahan (1 Kg, 3 Kg, 5 Kg) Saat Beras Langganan Habis -->
+            <div class="bg-white rounded-2xl p-4.5 border-2 border-emerald-800/20 shadow-xs space-y-3.5 relative overflow-hidden" id="beli-kemasan-tambahan">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 mb-1">
+                            <span>⚡</span> Beras Darurat • Siap Antar Cepat
+                        </div>
+                        <h2 class="text-sm font-serif font-extrabold text-[#1E3F2B] leading-tight">
+                            Beras Habis Sebelum Jadwal Kirim?
+                        </h2>
+                        <p class="text-[11px] text-stone-600 mt-0.5">
+                            Beli kemasan tambahan 1 Kg, 3 Kg, atau 5 Kg. Harga resmi langsung menyesuaikan database Koperasi.
+                        </p>
+                    </div>
+                    <span class="w-8 h-8 rounded-xl bg-[#E8F3EB] text-[#1E3F2B] flex items-center justify-center text-base shrink-0 font-bold shadow-2xs">
+                        🌾
+                    </span>
+                </div>
+
+                <!-- Pilihan 3 Kemasan (1kg, 3kg, 5kg) -->
+                <div class="grid grid-cols-3 gap-2">
+                    @foreach($this->packagingOptions as $kg => $option)
+                        <button 
+                            type="button"
+                            wire:click="selectRetailKg({{ $kg }})"
+                            class="p-2.5 rounded-xl border text-left transition-all duration-150 flex flex-col justify-between cursor-pointer relative {{ $selectedRetailKg === $kg ? 'border-2 border-[#1E3F2B] bg-[#E8F3EB]/40 shadow-xs ring-2 ring-[#1E3F2B]/10' : 'border-stone-200 bg-stone-50/50 hover:bg-stone-50 hover:border-stone-300' }}"
+                        >
+                            @if($selectedRetailKg === $kg)
+                                <span class="absolute top-1.5 right-1.5 w-3.5 h-3.5 rounded-full bg-[#1E3F2B] text-white flex items-center justify-center text-[9px] font-bold">
+                                    ✓
+                                </span>
+                            @endif
+
+                            <div>
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-stone-500 block">
+                                    {{ $option['tag'] }}
+                                </span>
+                                <div class="text-xs font-extrabold text-stone-900 mt-0.5">
+                                    {{ $option['name'] }}
+                                </div>
+                            </div>
+
+                            <div class="mt-2 pt-1.5 border-t border-stone-200/60">
+                                <span class="text-xs font-extrabold text-[#1E3F2B] tabular-nums block">
+                                    Rp {{ number_format($option['price'], 0, ',', '.') }}
+                                </span>
+                                <span class="text-[9px] text-stone-500">
+                                    Inpari 32 Asli
+                                </span>
+                            </div>
+                        </button>
+                    @endforeach
+                </div>
+
+                <!-- Kontrol Jumlah & Ringkasan Pembelian -->
+                <div class="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="text-[11px] font-bold text-stone-800">
+                            Jumlah Kemasan ({{ $selectedRetailKg }} kg):
+                        </div>
+                        <div class="text-[10px] text-stone-500">
+                            Total: <strong class="text-stone-900">{{ $selectedRetailKg * $retailQuantity }} kg beras</strong>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button 
+                            type="button" 
+                            wire:click="decrementRetailQty"
+                            class="w-7 h-7 rounded-lg bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center justify-center text-sm font-bold cursor-pointer disabled:opacity-40"
+                            {{ $retailQuantity <= 1 ? 'disabled' : '' }}
+                        >
+                            -
+                        </button>
+                        <span class="w-6 text-center font-extrabold text-xs text-stone-900 tabular-nums">
+                            {{ $retailQuantity }}
+                        </span>
+                        <button 
+                            type="button" 
+                            wire:click="incrementRetailQty"
+                            class="w-7 h-7 rounded-lg bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center justify-center text-sm font-bold cursor-pointer disabled:opacity-40"
+                            {{ $retailQuantity >= 10 ? 'disabled' : '' }}
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Total & Tombol Beli -->
+                <div class="pt-1 space-y-2">
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-xs text-stone-600">Total Biaya Kemasan:</span>
+                        <div class="text-right">
+                            <span class="text-base font-extrabold text-[#1E3F2B] tabular-nums">
+                                Rp {{ number_format($this->selectedRetailPrice, 0, ',', '.') }}
+                            </span>
+                            <span class="text-[10px] text-stone-500 block">
+                                (Tarif Rp {{ number_format(app(\App\Services\Finance\SubscriptionService::class)->getBasePricePerKgFromDatabase(), 0, ',', '.') }}/kg dari database)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        <!-- Tombol Beli Langsung (Modal QRIS / Invoice Baru) -->
+                        <button 
+                            type="button"
+                            wire:click="openRetailModal"
+                            class="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-[#1E3F2B] hover:bg-[#2C543B] text-white shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span>Beli Kemasan {{ $selectedRetailKg }} Kg Sekarang</span>
+                        </button>
+
+                        <!-- Tombol Pesan via WhatsApp Koperasi -->
+                        <a 
+                            href="https://wa.me/6281234567801?text={{ urlencode('Halo Admin Koperasi Panosogan, beras langganan saya (Invoice: ' . $subscription->invoice_number . ') sudah menipis/habis. Saya ingin pesan tambahan beras Inpari 32 kemasan ' . $selectedRetailKg . ' kg sebanyak ' . $retailQuantity . ' bungkus (Total Rp ' . number_format($this->selectedRetailPrice, 0, ',', '.') . ') ke alamat: ' . $subscription->delivery_address . ' (' . $subscription->city . ').') }}"
+                            target="_blank"
+                            class="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition-all flex items-center justify-center gap-1.5 text-center"
+                        >
+                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+                            </svg>
+                            <span>Pesan via WhatsApp Admin</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -347,6 +483,178 @@
                     Hubungi WhatsApp Pengelola Koperasi
                 </a>
             </div>
+
+            <!-- Banner Cepat Beli Kemasan 1Kg, 3Kg, 5Kg di Halaman Pencarian -->
+            <div class="rounded-2xl bg-gradient-to-br from-[#1E3F2B] to-[#2C543B] text-white p-4 space-y-2 shadow-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                        ⚡ Opsi Eceran Cepat
+                    </span>
+                    <span class="text-xs">🌾</span>
+                </div>
+                <h3 class="text-sm font-serif font-extrabold text-white leading-tight">
+                    Beras Langganan Habis? Tersedia Kemasan 1 Kg, 3 Kg, &amp; 5 Kg
+                </h3>
+                <p class="text-[11px] text-stone-200 leading-snug">
+                    Pesan beras Inpari 32 asli Panosogan secara eceran tanpa harus langganan rutin. Harga resmi mengikuti data terbaru Koperasi.
+                </p>
+                <a 
+                    href="{{ route('storefront.index') }}#kemasan-retail" 
+                    class="mt-2 inline-flex items-center justify-center w-full py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-900 font-extrabold text-xs transition-colors shadow-2xs"
+                >
+                    Lihat Pilihan Kemasan Retail (Mulai Rp {{ number_format(app(\App\Services\Finance\SubscriptionService::class)->getBasePricePerKgFromDatabase(), 0, ',', '.') }})
+                </a>
+            </div>
         @endif
+    </div>
+
+    <!-- Modal Checkout Kemasan Tambahan (1kg, 3kg, 5kg) -->
+    @if($showRetailModal && $subscription)
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
+            <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl border border-[#E5E0D5] shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-100 text-[#1E3F2B] flex items-center justify-center text-sm font-bold">
+                            🌾
+                        </span>
+                        <div>
+                            <h3 class="text-sm font-bold text-stone-900">
+                                {{ $retailSuccess ? 'Pesanan Tambahan Berhasil Dibuat' : 'Konfirmasi Beli Kemasan Tambahan' }}
+                            </h3>
+                            <p class="text-[10px] text-stone-500">
+                                Beras Pulen Inpari 32 • Koperasi Desa Panosogan
+                            </p>
+                        </div>
+                    </div>
+                    <button 
+                        type="button" 
+                        wire:click="closeRetailModal"
+                        class="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center text-sm font-bold cursor-pointer"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                @if(! $retailSuccess)
+                    <!-- Form Konfirmasi Beli Kemasan -->
+                    <div class="space-y-3">
+                        <div class="p-3.5 rounded-xl bg-[#F4F1EA] border border-[#E5E0D5] space-y-2 text-xs">
+                            <div class="flex justify-between items-center text-stone-700">
+                                <span>Pilihan Kemasan:</span>
+                                <strong class="text-stone-900 font-bold">Kemasan {{ $selectedRetailKg }} kg (x{{ $retailQuantity }} pack)</strong>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-700">
+                                <span>Total Bobot Beras:</span>
+                                <span class="font-extrabold text-[#1E3F2B]">{{ $selectedRetailKg * $retailQuantity }} kg</span>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-700">
+                                <span>Tarif Database Koperasi:</span>
+                                <span class="font-mono text-stone-600">Rp {{ number_format(app(\App\Services\Finance\SubscriptionService::class)->getBasePricePerKgFromDatabase(), 0, ',', '.') }} / kg</span>
+                            </div>
+                            <div class="pt-2 border-t border-[#E5E0D5] flex justify-between items-center font-bold">
+                                <span class="text-stone-800">Total Pembayaran:</span>
+                                <span class="text-sm text-[#1E3F2B] font-extrabold tabular-nums">
+                                    Rp {{ number_format($this->selectedRetailPrice, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Data Pengiriman Otomatis Menggunakan Profil Pelanggan -->
+                        <div class="p-3 rounded-xl border border-stone-200 bg-stone-50/70 text-xs space-y-1.5">
+                            <span class="text-[10px] font-bold uppercase text-stone-500 block">Tujuan Pengiriman (Sesuai Langganan):</span>
+                            <div class="font-bold text-stone-900">{{ $subscription->customer_name }} ({{ $subscription->customer_phone }})</div>
+                            <div class="text-stone-600 leading-snug">{{ $subscription->delivery_address }}, {{ $subscription->city }}</div>
+                        </div>
+
+                        <!-- Pilihan Metode Pembayaran -->
+                        <div>
+                            <label class="block text-[11px] font-bold text-stone-800 mb-1.5 uppercase tracking-wide">
+                                Metode Pembayaran:
+                            </label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer text-xs {{ $retailPaymentMethod === 'qris' ? 'border-[#1E3F2B] bg-[#E8F3EB]/50 font-bold text-[#1E3F2B]' : 'border-stone-200 text-stone-700' }}">
+                                    <input type="radio" wire:model.live="retailPaymentMethod" value="qris" class="text-[#1E3F2B] focus:ring-[#1E3F2B]">
+                                    <span>QRIS Instan</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer text-xs {{ $retailPaymentMethod === 'va' ? 'border-[#1E3F2B] bg-[#E8F3EB]/50 font-bold text-[#1E3F2B]' : 'border-stone-200 text-stone-700' }}">
+                                    <input type="radio" wire:model.live="retailPaymentMethod" value="va" class="text-[#1E3F2B] focus:ring-[#1E3F2B]">
+                                    <span>VA Bank (BSI)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Submit -->
+                        <div class="pt-2">
+                            <button 
+                                type="button" 
+                                wire:click="orderRetailPack" 
+                                wire:loading.attr="disabled"
+                                class="w-full py-3 px-4 rounded-xl font-extrabold text-xs bg-[#1E3F2B] hover:bg-[#2C543B] text-white shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                            >
+                                <span wire:loading.remove>Konfirmasi &amp; Bayar Rp {{ number_format($this->selectedRetailPrice, 0, ',', '.') }}</span>
+                                <span wire:loading class="inline-flex items-center gap-2">
+                                    <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                    </svg>
+                                    Memproses...
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                @else
+                    <!-- Status Sukses & Pembayaran -->
+                    <div class="text-center space-y-3">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-xl font-bold">
+                            ✓
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-stone-900">
+                                Pesanan Tambahan Siap Diproses!
+                            </h4>
+                            <p class="text-xs text-stone-600 mt-0.5">
+                                Invoice: <strong class="font-mono text-[#1E3F2B]">{{ $retailSubscription->invoice_number }}</strong>
+                            </p>
+                        </div>
+
+                        <!-- QR Code Simulasi -->
+                        <div class="p-4 bg-stone-50 border border-stone-200 rounded-2xl inline-block mx-auto text-center space-y-2">
+                            <div class="w-40 h-40 bg-white border border-stone-200 rounded-xl p-2 mx-auto flex items-center justify-center shadow-2xs">
+                                <img 
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode('TANI-AMANAH-RETAIL:' . $retailSubscription->invoice_number) }}" 
+                                    alt="QRIS Beras Amanah"
+                                    class="w-full h-full object-contain"
+                                >
+                            </div>
+                            <div class="text-[11px] font-bold text-stone-700">
+                                Total: Rp {{ number_format((float)$retailSubscription->total_amount, 0, ',', '.') }}
+                            </div>
+                            <span class="inline-block text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                                Status: Menunggu Pembayaran
+                            </span>
+                        </div>
+
+                        <!-- Tombol Simulasi Pembayaran Lunas -->
+                        <div class="space-y-2 pt-2">
+                            <button 
+                                type="button" 
+                                wire:click="simulateRetailPayment" 
+                                class="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                                <span>✓ Simulasikan Pembayaran QRIS Lunas</span>
+                            </button>
+
+                            <a 
+                                href="{{ route('order.show', $retailSubscription->invoice_number) }}" 
+                                class="w-full inline-block py-2 px-4 rounded-xl font-semibold text-xs text-stone-700 bg-stone-100 hover:bg-stone-200 transition-colors"
+                            >
+                                Lihat Halaman Pesanan Baru Ini
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
     </div>
 </div>

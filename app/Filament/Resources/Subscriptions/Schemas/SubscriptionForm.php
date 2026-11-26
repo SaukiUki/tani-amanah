@@ -55,6 +55,9 @@ class SubscriptionForm
                     ->options([
                         'quarterly' => 'Paket Musiman (3 bulan di muka - Rp 525.000)',
                         'monthly' => 'Paket Bulanan (10 kg/bulan - Rp 175.000)',
+                        'retail_1kg' => 'Kemasan 1 Kg (Eceran / Tambahan)',
+                        'retail_3kg' => 'Kemasan 3 Kg (Eceran / Tambahan)',
+                        'retail_5kg' => 'Kemasan 5 Kg (Eceran / Tambahan)',
                     ])
                     ->default('quarterly')
                     ->required(),

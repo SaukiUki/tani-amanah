@@ -53,11 +53,16 @@ class SubscriptionsTable
                     ->formatStateUsing(fn ($state): string => match ((string) $state) {
                         'quarterly' => 'Musiman (3 bln)',
                         'monthly' => 'Bulanan (1 bln)',
+                        'retail_1kg' => 'Eceran 1 Kg',
+                        'retail_3kg' => 'Eceran 3 Kg',
+                        'retail_5kg' => 'Eceran 5 Kg',
                         default => ucfirst((string) $state),
                     })
                     ->color(fn ($state): string => match ((string) $state) {
                         'quarterly' => 'success',
-                        default => 'info',
+                        'monthly' => 'info',
+                        'retail_1kg', 'retail_3kg', 'retail_5kg' => 'warning',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('total_amount')

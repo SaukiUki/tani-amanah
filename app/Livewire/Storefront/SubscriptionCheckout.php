@@ -75,7 +75,7 @@ class SubscriptionCheckout extends Component
 
     public function selectPlan(string $plan): void
     {
-        if (in_array($plan, ['monthly', 'quarterly'], true)) {
+        if (in_array($plan, ['monthly', 'quarterly', 'retail_1kg', 'retail_3kg', 'retail_5kg'], true)) {
             $this->selectedPlan = $plan;
         }
     }
@@ -92,18 +92,47 @@ class SubscriptionCheckout extends Component
         $this->showModal = false;
     }
 
+    public function getPackagingOptionsProperty(): array
+    {
+        return app(SubscriptionService::class)->getPackagingOptions();
+    }
+
     public function getSelectedPriceProperty(): int
     {
-        return $this->selectedPlan === 'quarterly'
-            ? SubscriptionService::QUARTERLY_PRICE
-            : SubscriptionService::MONTHLY_PRICE;
+        $options = $this->packagingOptions;
+
+        return match ($this->selectedPlan) {
+            'quarterly' => SubscriptionService::QUARTERLY_PRICE,
+            'monthly' => SubscriptionService::MONTHLY_PRICE,
+            'retail_1kg' => $options[1]['price'] ?? 17_500,
+            'retail_3kg' => $options[3]['price'] ?? 52_500,
+            'retail_5kg' => $options[5]['price'] ?? 87_500,
+            default => SubscriptionService::QUARTERLY_PRICE,
+        };
     }
 
     public function getSelectedPlanNameProperty(): string
     {
-        return $this->selectedPlan === 'quarterly'
-            ? 'Paket Musiman (3 Bulan di Muka - 10 kg/bulan)'
-            : 'Paket Bulanan (1 Bulan - 10 kg/bulan)';
+        return match ($this->selectedPlan) {
+            'quarterly' => 'Paket Musiman (3 Bulan di Muka - 10 kg/bulan)',
+            'monthly' => 'Paket Bulanan (1 Bulan - 10 kg/bulan)',
+            'retail_1kg' => 'Beras Amanah Kemasan 1 Kg (Eceran / Tambahan)',
+            'retail_3kg' => 'Beras Amanah Kemasan 3 Kg (Eceran / Tambahan)',
+            'retail_5kg' => 'Beras Amanah Kemasan 5 Kg (Eceran / Tambahan)',
+            default => 'Paket Musiman (3 Bulan di Muka)',
+        };
+    }
+
+    public function getSelectedKgProperty(): int
+    {
+        return match ($this->selectedPlan) {
+            'quarterly' => 30,
+            'monthly' => 10,
+            'retail_1kg' => 1,
+            'retail_3kg' => 3,
+            'retail_5kg' => 5,
+            default => 10,
+        };
     }
 
     public function getSalamAllocationProperty(): float
@@ -131,6 +160,8 @@ class SubscriptionCheckout extends Component
 
         $this->validate();
 
+        $kg = $this->selectedKg;
+
         $subscription = $subscriptionService->createSubscription([
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
@@ -138,7 +169,7 @@ class SubscriptionCheckout extends Component
             'delivery_address' => $this->delivery_address,
             'plan_type' => $this->selectedPlan,
             'payment_method' => $this->payment_method,
-            'rice_kg_per_month' => 10,
+            'rice_kg_per_month' => $kg,
         ]);
 
         $this->submittedSubscription = $subscription;

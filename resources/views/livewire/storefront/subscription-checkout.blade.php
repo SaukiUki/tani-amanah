@@ -259,6 +259,64 @@
                 </li>
             </ul>
         </div>
+
+        <!-- Pemisah Visual / Pilihan Kemasan Eceran Cepat -->
+        <div class="pt-4 border-t border-[#E5E0D5]" id="kemasan-retail">
+            <div class="flex items-center justify-between mb-2">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                        <span>⚡</span> Opsi Beli Eceran &amp; Tambahan
+                    </span>
+                    <h3 class="text-base font-serif font-extrabold text-stone-900 tracking-tight mt-1">
+                        Beli Kemasan 1 Kg, 3 Kg, atau 5 Kg
+                    </h3>
+                </div>
+                <span class="text-xs">🌾</span>
+            </div>
+            <p class="text-xs text-stone-600 mb-3 leading-relaxed">
+                Menghindari beras habis mendadak di rumah sebelum jadwal kirim berikutnya, atau untuk mencoba rasa beras pulen Inpari 32 asli Panosogan. Harga resmi langsung dari database Koperasi.
+            </p>
+
+            <div class="grid grid-cols-3 gap-2">
+                @foreach($this->packagingOptions as $kg => $option)
+                    @php
+                        $planKey = "retail_{$kg}kg";
+                        $isSelected = ($selectedPlan === $planKey);
+                    @endphp
+                    <div 
+                        wire:click="selectPlan('{{ $planKey }}')"
+                        class="p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between relative {{ $isSelected ? 'border-2 border-[#1E3F2B] bg-[#E8F3EB]/40 shadow-md ring-2 ring-[#1E3F2B]/15' : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-2xs' }}"
+                    >
+                        @if($isSelected)
+                            <span class="absolute -top-2 right-2 px-1.5 py-0.2 rounded-full bg-[#1E3F2B] text-white text-[9px] font-bold shadow-2xs">
+                                Terpilih
+                            </span>
+                        @endif
+
+                        <div>
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-[#9A6209] block">
+                                {{ $option['tag'] }}
+                            </span>
+                            <div class="text-xs font-extrabold text-stone-900 mt-0.5">
+                                Kemasan {{ $kg }} Kg
+                            </div>
+                            <p class="text-[10px] text-stone-500 mt-1 line-clamp-2 leading-tight">
+                                {{ $option['desc'] }}
+                            </p>
+                        </div>
+
+                        <div class="mt-2.5 pt-2 border-t border-stone-100">
+                            <div class="text-xs font-extrabold text-[#1E3F2B] tabular-nums">
+                                Rp {{ number_format($option['price'], 0, ',', '.') }}
+                            </div>
+                            <div class="text-[9px] text-stone-500 font-medium mt-0.5">
+                                Rp {{ number_format(app(\App\Services\Finance\SubscriptionService::class)->getBasePricePerKgFromDatabase(), 0, ',', '.') }}/kg
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     </section>
 
     <!-- 4. Kartu "Kenali Petanimu" (Pak Darma) -->
@@ -354,7 +412,13 @@
     <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-[#E5E0D5] px-4 py-3.5 flex items-center justify-between z-40 shadow-lg">
         <div>
             <div class="text-[10px] font-bold text-[#9A6209] uppercase tracking-wider">
-                {{ $selectedPlan === 'quarterly' ? 'Paket 3 Bulan di Muka' : 'Paket Bulanan' }}
+                @if(str_starts_with($selectedPlan, 'retail_'))
+                    Kemasan Retail {{ $this->selectedKg }} Kg
+                @elseif($selectedPlan === 'quarterly')
+                    Paket 3 Bulan di Muka
+                @else
+                    Paket Bulanan
+                @endif
             </div>
             <div class="text-xl font-extrabold text-[#1E3F2B] tabular-nums leading-none mt-0.5">
                 Rp {{ number_format($this->selectedPrice, 0, ',', '.') }}
@@ -366,7 +430,7 @@
             wire:click="openCheckout"
             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm bg-[#1E3F2B] hover:bg-[#2C543B] text-white shadow-md shadow-emerald-950/15 transition-all cursor-pointer"
         >
-            <span>Langganan sekarang</span>
+            <span>{{ str_starts_with($selectedPlan, 'retail_') ? 'Beli Sekarang' : 'Langganan sekarang' }}</span>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>

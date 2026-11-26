@@ -24,6 +24,70 @@ class SubscriptionService
     public const DEFAULT_RICE_KG_PER_MONTH = 10;
 
     /**
+     * Ambil tarif dasar beras per kg langsung dari database.
+     * Mengambil dari subscription aktif terakhir atau histori transaksi di database.
+     */
+    public function getBasePricePerKgFromDatabase(): int
+    {
+        try {
+            $latest = Subscription::query()
+                ->where('rice_kg_per_month', '>', 0)
+                ->where('duration_months', '>', 0)
+                ->where('total_amount', '>', 0)
+                ->latest('id')
+                ->first();
+
+            if ($latest && $latest->rice_kg_per_month > 0 && $latest->duration_months > 0) {
+                $totalKg = (float) ($latest->rice_kg_per_month * $latest->duration_months);
+                if ($totalKg > 0) {
+                    return (int) round(((float) $latest->total_amount) / $totalKg);
+                }
+            }
+        } catch (\Throwable) {
+            // Fallback aman jika database belum termigrasi atau koneksi unready
+        }
+
+        return (int) (self::MONTHLY_PRICE / self::DEFAULT_RICE_KG_PER_MONTH); // fallback default Rp 17.500/kg
+    }
+
+    /**
+     * Opsi kemasan eceran/tambahan (1kg, 3kg, 5kg) dengan harga menyesuaikan dari database.
+     *
+     * @return array<int, array{kg: int, name: string, label: string, desc: string, price: int, tag: string}>
+     */
+    public function getPackagingOptions(): array
+    {
+        $pricePerKg = $this->getBasePricePerKgFromDatabase();
+
+        return [
+            1 => [
+                'kg' => 1,
+                'name' => 'Kemasan 1 Kg',
+                'label' => 'Kemasan Harian (1 kg)',
+                'desc' => 'Porsi darurat saat beras langganan habis mendadak atau uji coba rasa pulen.',
+                'price' => 1 * $pricePerKg,
+                'tag' => 'Praktis Harian',
+            ],
+            3 => [
+                'kg' => 3,
+                'name' => 'Kemasan 3 Kg',
+                'label' => 'Kemasan Praktis (3 kg)',
+                'desc' => 'Pas untuk tambahan konsumsi keluarga selama 1 minggu sebelum jadwal kirim rutin.',
+                'price' => 3 * $pricePerKg,
+                'tag' => 'Paling Populer',
+            ],
+            5 => [
+                'kg' => 5,
+                'name' => 'Kemasan 5 Kg',
+                'label' => 'Kemasan Hemat (5 kg)',
+                'desc' => 'Kemasan karung mini vakum kedap udara, aman disimpan sebagai stok dapur.',
+                'price' => 5 * $pricePerKg,
+                'tag' => 'Pilihan Hemat',
+            ],
+        ];
+    }
+
+    /**
      * Hitung otomatis alokasi modal tanam salam (khusus paket 3 bulan di muka).
      */
     public function calculateSalamAllocation(string $planType, int $riceKgPerMonth = self::DEFAULT_RICE_KG_PER_MONTH): float
@@ -48,13 +112,36 @@ class SubscriptionService
     {
         $planType = (string) ($data['plan_type'] ?? $data['paket'] ?? 'quarterly');
         $isQuarterly = $planType === 'quarterly' || $planType === SubscriptionPlan::Quarterly->value;
+        $isRetail = str_starts_with($planType, 'retail_');
 
-        $durationMonths = $isQuarterly ? 3 : 1;
-        $riceKg = (int) ($data['rice_kg_per_month'] ?? self::DEFAULT_RICE_KG_PER_MONTH);
-        $totalAmount = (float) ($isQuarterly ? self::QUARTERLY_PRICE : self::MONTHLY_PRICE);
+        $basePricePerKg = $this->getBasePricePerKgFromDatabase();
 
-        // Perhitungan otomatis alokasi modal tanam salam (khusus paket 3 bulan di muka)
-        $salamAllocation = $this->calculateSalamAllocation($planType, $riceKg);
+        if ($isRetail) {
+            $kg = match ($planType) {
+                'retail_1kg', SubscriptionPlan::Retail1Kg->value => 1,
+                'retail_3kg', SubscriptionPlan::Retail3Kg->value => 3,
+                'retail_5kg', SubscriptionPlan::Retail5Kg->value => 5,
+                default => 1,
+            };
+            $durationMonths = 1;
+            $quantity = (int) ($data['quantity'] ?? 1);
+            $riceKg = (int) ($data['rice_kg_per_month'] ?? ($kg * $quantity));
+            $totalAmount = (float) ($data['total_amount'] ?? ($riceKg * $basePricePerKg));
+            $salamAllocation = 0.0;
+            $canonicalPlan = $planType;
+        } elseif ($isQuarterly) {
+            $durationMonths = 3;
+            $riceKg = (int) ($data['rice_kg_per_month'] ?? self::DEFAULT_RICE_KG_PER_MONTH);
+            $totalAmount = (float) ($data['total_amount'] ?? self::QUARTERLY_PRICE);
+            $salamAllocation = $this->calculateSalamAllocation($planType, $riceKg);
+            $canonicalPlan = 'quarterly';
+        } else {
+            $durationMonths = 1;
+            $riceKg = (int) ($data['rice_kg_per_month'] ?? self::DEFAULT_RICE_KG_PER_MONTH);
+            $totalAmount = (float) ($data['total_amount'] ?? self::MONTHLY_PRICE);
+            $salamAllocation = 0.0;
+            $canonicalPlan = 'monthly';
+        }
 
         $customerName = (string) ($data['customer_name'] ?? $data['nama_pelanggan'] ?? '');
         $customerPhone = (string) ($data['customer_phone'] ?? $data['no_wa'] ?? '');
@@ -75,7 +162,7 @@ class SubscriptionService
             'customer_phone' => $customerPhone,
             'city' => $city,
             'delivery_address' => $deliveryAddress,
-            'plan_type' => $isQuarterly ? 'quarterly' : 'monthly',
+            'plan_type' => $canonicalPlan,
             'rice_kg_per_month' => $riceKg,
             'duration_months' => $durationMonths,
             'total_amount' => $totalAmount,
@@ -88,7 +175,7 @@ class SubscriptionService
             'nama_pelanggan' => $customerName,
             'no_wa' => $customerPhone,
             'alamat' => $deliveryAddress,
-            'paket' => $isQuarterly ? 'quarterly' : 'monthly',
+            'paket' => $canonicalPlan,
             'total_bayar' => $totalAmount,
             'status_pembayaran' => 'menunggu_pembayaran',
             'tanggal_mulai' => now()->toDateString(),
